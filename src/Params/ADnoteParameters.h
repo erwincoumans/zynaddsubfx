@@ -105,6 +105,63 @@ struct ADnoteGlobalParam {
     static const rtosc::Ports &ports;
 };
 
+struct Shape1  { int dim[1]; };
+struct Shape2  { int dim[2]; };
+struct Shape3  { int dim[3]; };
+
+template <class T>
+struct Tensor3 {
+    Tensor3(Shape3, Allocator&);
+    T    ***data;
+    Shape3  shape;
+};
+template <class T>
+struct Tensor2 {
+    Tensor2(Shape2, Allocator&);
+    T     **data;
+    Shape2  shape;
+};
+template <class T>
+struct Tensor1 {
+    Tensor1(Shape1, Allocator&);
+    T      *data;
+    Shape1  shape;
+};
+
+
+
+class Wavetable
+{
+    using float32 = float;
+    Tensor3<float32> data;  //!< time=col,freq=row,semantics(oscil param or random seed)=depth
+    Tensor1<float32> freqs; //!< The frequency of each 'row'
+    Tensor1<float32> semantics; //!< E.g. oscil params or random seed (e.g. 0...127)
+
+    enum class WtMode
+    {
+        freq_smps, // (freq)->samples
+        freqseed_smps, // (freq, seed)->samples
+        freqwave_smps // (freq, wave param)->samples
+    };
+public:
+    //! Return sample slice for given frequency
+    Tensor1<float32> get(float32 freq); //works for both seed and seedless setups
+    //future extensions
+    //Tensor2<float32> get_antialiased(void); //works for seed and seedless setups
+    //Tensor2<float32> get_wavetablemod(float32 freq);
+
+    //! Insert generated data into this object
+    //! If this is only adding new random seeds, then the rest of the data does
+    //! not need to be purged
+    //! @param semantics seed or param
+    void insert(Tensor3<float> data, Tensor1<float32> freqs, Tensor1<float32> semantics, bool invalidate=true);
+
+    //future extension
+    //Used to determine if new random seeds are needed
+    //int number_of_remaining_seeds(void);
+};
+
+
 
 
 /***********************************************************/

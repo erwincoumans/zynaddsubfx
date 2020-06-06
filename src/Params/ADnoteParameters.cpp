@@ -458,6 +458,30 @@ const Ports &ADnoteParameters::ports  = adPorts;
 const Ports &ADnoteVoiceParam::ports  = voicePorts;
 const Ports &ADnoteGlobalParam::ports = globalPorts;
 
+
+
+Tensor1<Wavetable::float32> Wavetable::get(Wavetable::float32 freq)
+{
+    (void) freq;
+    /* TODO: this is obviously wrong yet, we need to return slices from data, */
+    /*       not from freqs. This is for removing compiler warnings yet */
+    return freqs;
+}
+
+void Wavetable::insert(Tensor3<float> data,
+                       Tensor1<Wavetable::float32> freqs,
+                       Tensor1<Wavetable::float32> semantics,
+                       bool invalidate)
+{
+    (void)data;
+    (void)freqs;
+    (void)semantics;
+    (void)invalidate;
+}
+
+
+
+
 ADnoteParameters::ADnoteParameters(const SYNTH_T &synth, FFTwrapper *fft_,
                                    const AbsTime *time_)
     :PresetsArray(), GlobalPar(time_), time(time_), last_update_timestamp(0)
